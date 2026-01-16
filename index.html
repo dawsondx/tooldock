@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <title>ToolDock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="./assets/index-DROU6LMg.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CgyEKKiD.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand">
+          <span class="logo-dot"></span>
+          <div>
+            <h1>ToolDock</h1>
+          </div>
+        </div>
+        
+        <!-- Mode Switcher (Segmented Control) -->
+        <div class="mode-switch">
+            <button id="modePreset" class="mode-btn active">预设空间</button>
+            <button id="modePersonal" class="mode-btn">个人空间</button>
+        </div>
+      </div>
+
+      <!-- Hero Search -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="搜索工具 / 网址 / 分类"
+            autocomplete="off"
+          />
+          <span class="shortcut-badge">/</span>
+        </div>
+        <!-- Hidden/Ghost buttons moved out or removed if not needed in Hero Search visual -->
+        <!-- We still need functionality, so let's keep them but hidden or repositioned if logic depends on them -->
+        <!-- Logic depends on clearBtn presence. Let's keep clearBtn inside wrapper but styled as 'x' -->
+        <button id="clearBtn" class="clear-icon" title="清空">✕</button>
+        <!-- addToolBtn is global action, maybe move to right or keep near search? 
+             User asked for "Focus Search". Let's move Add button to Right side or keep it subtle.
+             Actually, let's put Add Tool in the User Area or float it. 
+             For now, let's keep it near search but style it as a standalone icon-btn or primary btn next to search?
+             Requirement: "Search Box as Visual Core". 
+             Let's hide Add Tool in Search Box, maybe put it in Topbar Right.
+        -->
+      </div>
+
+      <div class="topbar-right">
+        <button id="addToolBtn" class="primary-btn sm">+ 添加</button>
+        
+        <div class="user-menu-container" id="userMenu">
+            <button id="loginBtn" class="primary-btn">登录</button>
+            
+            <div id="userInfo" class="user-profile" style="display: none;">
+                <div class="avatar-wrapper">
+                    <img id="userAvatar" src="" alt="Avatar" class="avatar">
+                    <div class="sync-dot" id="syncStatus"></div>
+                </div>
+                
+                <!-- Dropdown -->
+                <div class="user-dropdown">
+                    <div class="dropdown-header">
+                        <span id="userEmail" class="user-email"></span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button id="logoutBtn" class="dropdown-item text-danger">退出登录</button>
+                </div>
+            </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <h2>分类</h2>
+          <div id="stats" class="stats">加载中…</div>
+        </div>
+        <ul id="categoryList" class="category-list"></ul>
+        <div class="import-card">
+          <h3>更新收藏夹</h3>
+          <p>支持浏览器导出的 HTML 书签文件</p>
+          
+          <div class="upload-area">
+            <input id="importFile" type="file" accept=".html" class="visually-hidden" />
+            <label for="importFile" class="upload-trigger">
+              <span class="icon">📂</span>
+              <span id="fileName" class="text">点击选择文件</span>
+            </label>
+          </div>
+
+          <div class="import-actions">
+            <button id="importBtn" class="primary-btn full-width" disabled>确认导入</button>
+            <button id="downloadBtn" class="ghost full-width">备份数据</button>
+          </div>
+          <div id="importStatus" class="import-status"></div>
+        </div>
+      </aside>
+
+      <section class="content">
+        <div class="content-head">
+          <div>
+            <h2 id="currentTitle">全部工具</h2>
+            <div id="currentMeta" class="current-meta"></div>
+          </div>
+          <div class="content-actions">
+            <label for="sortSelect">排序</label>
+            <select id="sortSelect">
+              <option value="default">默认</option>
+              <option value="smart">智能排序</option>
+              <option value="name">名称 A-Z</option>
+              <option value="recent">最近使用</option>
+              <option value="popular">常用次数</option>
+            </select>
+            <div class="view-toggle" role="group" aria-label="结果视图">
+              <button type="button" data-view="card">卡片</button>
+              <button type="button" data-view="list">列表</button>
+              <button type="button" data-view="dense">密集</button>
+            </div>
+            <div class="theme-toggle" role="group" aria-label="主题切换">
+              <button type="button" data-theme="light">浅色</button>
+              <button type="button" data-theme="dark">深色</button>
+              <button type="button" data-theme="mono">极简</button>
+            </div>
+          </div>
+        </div>
+        <div id="cards" class="cards"></div>
+        <div id="emptyState" class="empty" style="display: none;">
+          <p>没有匹配的工具，换个关键词试试。</p>
+          <div class="empty-actions" style="margin-top: 16px; display: flex; gap: 12px; justify-content: center;">
+             <button id="emptyClearBtn" class="ghost">清空搜索</button>
+             <button id="emptyAddBtn" class="primary-btn">添加工具</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>数据来源：浏览器收藏夹导出</span>
+      <span>·</span>
+      <span id="updateTime"></span>
+    </footer>
+
+    <dialog id="toolModal" class="modal">
+      <form method="dialog" class="modal-form">
+        <h3 id="modalTitle">添加工具</h3>
+        <div class="form-group">
+          <label for="toolTitle">名称</label>
+          <input type="text" id="toolTitle" required placeholder="例如：ChatGPT" />
+        </div>
+        <div class="form-group">
+          <label for="toolUrl">网址</label>
+          <input type="url" id="toolUrl" required placeholder="https://..." />
+        </div>
+        <div class="form-group">
+          <label for="toolCategory">分类</label>
+          <input type="text" id="toolCategory" list="categoryOptions" placeholder="选择或输入新分类" />
+          <datalist id="categoryOptions"></datalist>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="deleteBtn" class="ghost btn-danger btn-left" style="display: none;">删除</button>
+          <button type="button" id="cancelBtn" class="ghost">取消</button>
+          <button type="submit" id="saveBtn" class="primary-btn">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="authModal" class="modal">
+      <div class="modal-form">
+        <h3 id="authTitle">登录</h3>
+        
+        <!-- Tabs -->
+        <div class="auth-tabs" style="display: flex; gap: 12px; margin-bottom: 16px;">
+            <button type="button" class="auth-tab active" data-tab="login">登录</button>
+            <button type="button" class="auth-tab" data-tab="register">注册</button>
+        </div>
+
+        <form id="authForm">
+            <!-- Username/Email Field (Login) -->
+            <div class="form-group" id="loginIdGroup">
+                <label for="authLoginId">用户名 / 邮箱</label>
+                <input type="text" id="authLoginId" placeholder="输入用户名或邮箱" />
+            </div>
+
+            <!-- Register Fields -->
+            <div class="form-group" id="regUserGroup" style="display: none;">
+                <label for="authUsername">用户名</label>
+                <input type="text" id="authUsername" placeholder="设置用户名 (唯一)" />
+            </div>
+            <div class="form-group" id="regEmailGroup" style="display: none;">
+                <label for="authEmail">邮箱</label>
+                <input type="email" id="authEmail" placeholder="example@email.com" />
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group" id="passGroup">
+                <label for="authPassword">密码</label>
+                <input type="password" id="authPassword" placeholder="输入密码" />
+            </div>
+
+            <!-- Forgot Password Link -->
+            <div style="text-align: right; margin-top: -4px;" id="forgotLinkGroup">
+                <button type="button" id="forgotBtn" class="ghost" style="padding: 0; height: auto; font-size: 12px;">忘记密码?</button>
+            </div>
+
+            <div id="authError" style="color: #ef4444; font-size: 13px; margin-top: 8px; display: none;"></div>
+
+            <div class="modal-actions" style="margin-top: 20px; flex-direction: column;">
+                <button type="submit" id="authSubmitBtn" class="primary-btn full-width">登录</button>
+                <div class="divider" style="text-align: center; font-size: 12px; color: var(--text-tertiary); margin: 8px 0;">或</div>
+                <button type="button" id="googleLoginBtn" class="ghost full-width" style="border: 1px solid var(--border-light);">
+                    <img src="https://www.google.com/favicon.ico" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 8px;">
+                    使用 Google 登录
+                </button>
+            </div>
+        </form>
+        
+        <!-- Forgot Password View -->
+        <form id="forgotForm" style="display: none;">
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">请输入您的注册邮箱，我们将向您发送重置密码链接。</p>
+            <div class="form-group">
+                <label for="forgotEmail">邮箱</label>
+                <input type="email" id="forgotEmail" required placeholder="example@email.com" />
+            </div>
+            <div id="forgotError" style="color: #ef4444; font-size: 13px; margin-top: 8px; display: none;"></div>
+            <div id="forgotSuccess" style="color: #10b981; font-size: 13px; margin-top: 8px; display: none;">重置链接已发送，请检查邮件。</div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button type="button" id="backToLoginBtn" class="ghost">返回登录</button>
+                <button type="submit" class="primary-btn">发送重置链接</button>
+            </div>
+        </form>
+
+        <!-- Update Password View (Hidden by default) -->
+        <form id="updatePassForm" style="display: none;">
+            <div class="form-group">
+                <label for="newPassword">新密码</label>
+                <input type="password" id="newPassword" required placeholder="设置新密码" />
+            </div>
+            <div id="updatePassError" style="color: #ef4444; font-size: 13px; margin-top: 8px; display: none;"></div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button type="submit" class="primary-btn full-width">更新密码</button>
+            </div>
+        </form>
+
+        <button id="authCloseBtn" class="ghost" style="position: absolute; top: 16px; right: 16px; padding: 4px 8px; height: auto;">✕</button>
+      </div>
+    </dialog>
+
+    <script src="bookmarks-data.js"></script>
+    <script src="favicon-manager.js"></script>
+  </body>
+</html>
