@@ -53,7 +53,7 @@
 ## 🎬 效果预览
 
 <!-- 添加截图说明 -->
-> 📸 **截图指南**：将项目运行截图放入 `screenshots/` 目录，命名为 `preview.png`，然后更新下方图片路径
+> 📸 **主界面截图**：
 
 <div align="center">
   <img src="screenshots/preview.png" alt="ToolDock 主界面预览" width="800">
